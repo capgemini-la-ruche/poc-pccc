@@ -7,4 +7,4 @@ Plateforme Collaborative de Compétences et Contenus
   <li>Pour travailler sur une fonctionnalité, copier <b>develop</b> dans une nouvelle branche, par exemple <b>dev-page-contenus</b>. 
    Une fois que le code fonctionne, merger dans <b>develop</b></li>
 </ul>
-dd
+ddd
