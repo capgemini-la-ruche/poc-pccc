@@ -1,3 +1,4 @@
 /target
 /.idea
 /*.log
+/*.last.results.properties

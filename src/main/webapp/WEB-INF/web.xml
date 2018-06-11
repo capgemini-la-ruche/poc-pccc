@@ -4,6 +4,10 @@
 
 <web-app>
 	<display-name>Archetype Created Web Application</display-name>
+	<welcome-file-list>
+		<welcome-file>homepage.html</welcome-file>
+	</welcome-file-list>
+
 	<servlet>
 		<servlet-name>info</servlet-name>
 		<servlet-class>com.capgemini.pccc.manager.InfoServlet</servlet-class>
