@@ -132,13 +132,13 @@ public class AbstractHttpServlet extends HttpServlet {
     /**
      * @param reqURI
      * @param resp
-     * @param text      can be an object or a json object
+     * @param jsonObject      can be an object or a json object
      * @param isSuccess
      * @throws IOException
      */
-    protected void respondWithJson(String reqURI, HttpServletResponse resp, String text, boolean isSuccess) {
+    protected void respondWithJson(String reqURI, HttpServletResponse resp, JSONObject jsonObject, boolean isSuccess) {
         String method =
-                "respondWithJson(req, resp, text [" + text.length() + "]chars, " + isSuccess + ")" + Constants.DASHES;
+                "respondWithJson(req, resp, text [" + jsonObject.length() + "]chars, " + isSuccess + ")" + Constants.DASHES;
         LOG.info(method + " -- BEGIN");
         displayResponseHeaders(resp);
 
@@ -146,7 +146,7 @@ public class AbstractHttpServlet extends HttpServlet {
          * faire un vrai test unitaire
          */
         if (resp == null ) {
-            LOG.warn(method + "JSONObject :" + text);
+            LOG.warn(method + "JSONObject :" + jsonObject);
             LOG.warn(method + "HttpServletResponse resp is NULL => RETURNING NOW");
             return;
         }
@@ -158,20 +158,24 @@ public class AbstractHttpServlet extends HttpServlet {
          * etc...
          * }
          */
-        JSONObject jso = new JSONObject();
-        jso.put("uri", reqURI);
-        jso.put("success", isSuccess);
-        jso.put("result", text);
+        JSONObject jsoResponse = new JSONObject();
+        jsoResponse.put("uri", reqURI);
+        jsoResponse.put("success", isSuccess);
+        jsoResponse.put("result", jsonObject);
+
+        LOG.info(jsoResponse.toString());
+        LOG.info(Constants.X_LINE);
+
 
         resp.setContentType("application/json; charset=UTF-8");
         resp.setCharacterEncoding("utf-8");
-        resp.setContentLength(jso.toString().getBytes().length);
+        resp.setContentLength(jsoResponse.toString().getBytes().length);
         resp.setStatus(HttpServletResponse.SC_OK);
 
         PrintWriter out = null;
         try {
             out = resp.getWriter();
-            out.println(jso.toString());
+            out.println(jsoResponse);
             out.close();
             LOG.info(method + "ResponseHeaders and ResponseBody sent OK");
         } catch (IOException e) {

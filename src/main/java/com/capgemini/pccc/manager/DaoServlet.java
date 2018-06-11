@@ -191,7 +191,9 @@ public class DaoServlet extends AbstractHttpServlet {
     private Boolean isParamMissing(String reqURI, HttpServletResponse response, String paramName, Map<String, String> httpValMap) {
         String paramVal = httpValMap.get(paramName);
         if (paramVal == null) {
-            respondWithJson(reqURI, response, "parametre '" + paramName + "' manquant", false);
+            JSONObject jso = new JSONObject();
+            jso.put("error", "parametre '" + paramName + "' manquant");
+            respondWithJson(reqURI, response, jso, false);
             return Boolean.TRUE;
         }
         LOG.info(paramName + " '" + paramVal + "'");
@@ -286,8 +288,8 @@ public class DaoServlet extends AbstractHttpServlet {
         try {
             jsonObject = daoManager.executeSQL(sql, aggColumnId, queryName);
             if (jsonObject != null) {
+                respondWithJson(reqURI, response, jsonObject, false);
                 saveLastResult(queryName, jsonObject);
-                respondWithJson(reqURI, response, jsonObject.toString(), false);
                 return;
             }
         } catch (SQLException e) {

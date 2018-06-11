@@ -25,16 +25,14 @@
 
 <H3>Les URLs qui fonctionnent actuellement (jetty lancé)</H3>
 <ul>
-  <li>http://localhost:8080/pcccManager/  sans doute le future IHM de la PCCC</li>
-  <li>http://localhost:8080/pcccManager/info  infos techniques diverses</li>
-  <li>http://localhost:8080/pcccManager/dao?action=update  Not implemented</li>
-  <li>http://localhost:8080/pcccManager/dao?action=select&queryName=tags  <br/>
-    C'est un mode REST pour interroger la BDD<br/>
-    Le "queryName" correspond au nom de la requête SQL à exécuter : pccc.sql.queries.properties<br/>
-    La réponse revient en JSON.<br/></li>
-  <li>http://localhost:8080/pcccManager/dao?action=select&queryName=resourceByWorkLocation<br/>
-    pccc.sql.select.resourceByWorkLocation<br/>
-    pccc.sql.select.resourceByWorkLocation.aggColumnId = 1 n° de colonne sur laquelle on veut l'aggregation.<br/>
+  <li><a href="http://localhost:8080/pcccManager/">localhost:8080/pcccManager/</a>  sans doute le future IHM de la PCCC</li>
+  <li><a href="http://localhost:8080/pcccManager/info">localhost:8080/pcccManager/info</a>  infos techniques diverses</li>
+  <li><a href="http://localhost:8080/pcccManager/dao?action=update">localhost:8080/pcccManager/dao?action=update</a>  Not implemented</li>
+  <li><a href="http://localhost:8080/pcccManager/dao?action=select&queryName=tags">localhost:8080/pcccManager/dao?action=select&queryName=tags</a>  </li>
+  <li><a href="http://localhost:8080/pcccManager/dao?action=select&queryName=resourceByWorkLocation">localhost:8080/pcccManager/dao?action=select&queryName=resourceByWorkLocation</a> <br/>
+    C'est un appel HTTP GET en REST pour interroger la BDD et construire l'IHM en js<br/>
+    Le "queryName" indique la requête SQL à exécuter dans le fichier <b>pccc.sql.queries.properties</b><br/>
+    voir pccc.sql.select.resourceByWorkLocation = ... du SQL ...<br/>
+    voir pccc.sql.select.resourceByWorkLocation.aggColumnId = 1 => <b>n° de colonne sur laquelle on veut l'aggregation</b><br/>
     Essayez différentes valeurs<br/>
-    A partir de ses docs json, le framework javascript doit afficher la page telle que proposé dans la maquette Excel</li>
 </ul>
