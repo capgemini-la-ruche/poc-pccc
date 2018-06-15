@@ -278,6 +278,7 @@ public class DaoServlet extends AbstractHttpServlet {
         String queryName = httpValMap.get("queryName");
         String method = "doSelect(HttpServletResponse, Map<String, String>)(response, " + queryName + ")" + Constants.DASHES;
 
+        LOG.info(AbstractHttpServlet.userDir);
 
         // pccc.sql.select.generic = SELECT * FROM ${TBL_NAME};
         //_config.setProperty("QUERY_NAME", queryName);

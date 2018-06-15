@@ -24,7 +24,7 @@ public class AbstractHttpServlet extends HttpServlet {
     // =========================================== constants
     private final static Logger LOG = LoggerFactory.getLogger(AbstractHttpServlet.class);
     private final static String BR = "<BR/>\n";
-    private final static String userDir = System.getProperty("user.dir");
+    public final static String userDir = System.getProperty("user.dir");
 
 
     // =========================================== class variables
