@@ -34,5 +34,5 @@
     Le "queryName" indique la requête SQL à exécuter dans le fichier <b>pccc.sql.queries.properties</b><br/>
     voir pccc.sql.select.resourceByWorkLocation = ... du SQL ...<br/>
     voir pccc.sql.select.resourceByWorkLocation.aggColumnId = 1 => <b>n° de colonne sur laquelle on veut l'aggregation</b><br/>
-    Essayez différentes valeurs<br/>
+    Essayez différentes valeurs.<br/>
 </ul>
