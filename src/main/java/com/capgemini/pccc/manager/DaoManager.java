@@ -7,6 +7,7 @@ import com.capgemini.pccc.util.Constants;
 import com.capgemini.pccc.util.Enumeration;
 import com.capgemini.pccc.util.Enumeration.MappedJavaType;
 import com.capgemini.pccc.util.Enumeration.MappedJsonType;
+import com.capgemini.pccc.util.IaUtils;
 import com.capgemini.pccc.util.UtilEntry;
 import org.apache.commons.configuration2.Configuration;
 import org.json.JSONArray;
@@ -14,6 +15,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +40,13 @@ public class DaoManager {
     //  Database credentials
     private static String dbUser = null;
     private static String dbPwd = null;
+
+    private static String LAST_RESULT_PROP = ".last.result";
+
+    protected static Connection dbConn = null;
+
+    private static String LAST_RESULT_FILE = "pccc.sql.queries.last.results.properties";
+    public static Configuration _lastResultConfig = IaUtils.loadSaveableConfig(LAST_RESULT_FILE, true);
 
     // =========================================== instance variables
 
@@ -69,7 +79,7 @@ public class DaoManager {
     /**
      * @param sql
      */
-    public JSONObject executeSQL(String sql, int aggColumnId, String queryName) throws SQLException {
+    public JSONObject executeSQL(String sql, int aggColumnId, String queryObjName) throws SQLException {
 
         Statement stmt = null;
         String method = "executeSQL(sql)" + Constants.DASHES;
@@ -80,10 +90,19 @@ public class DaoManager {
         JSONObject responseJso = null;
 
         if (useNoDBMode) {
-            String sqlResponse = _config.getString("pccc.sql.select." + queryName + ".last.result");
-            LOG.info(sqlResponse);
-            responseJso = new JSONObject(sqlResponse);
-            return responseJso;
+            LOG.warn(Constants.C_LINE);
+            LOG.warn("Using NO_DB_MODE");
+            LOG.warn(Constants.C_LINE);
+
+            /**
+             * if (_config has the json) && (useNoDBMode) => we return this json directly
+             */
+            String jsonLastResult = _lastResultConfig.getString("pccc.sql.select." + queryObjName + ".last.result");
+            if (jsonLastResult != null) {
+                LOG.info(jsonLastResult);
+                responseJso = new JSONObject(jsonLastResult);
+                return responseJso;
+            }
         }
 
 
@@ -155,6 +174,8 @@ public class DaoManager {
         }//end try
         LOG.info(rootJsonObject.toString(4));
         LOG.info("Goodbye!");
+
+        saveLastResult(DaoServlet.SELECT_PROP, queryObjName, rootJsonObject);
 
         return rootJsonObject;
     }
@@ -406,7 +427,6 @@ public class DaoManager {
     }
 
     /**
-     *
      * @return
      * @throws SQLException
      */
@@ -429,5 +449,21 @@ public class DaoManager {
         LOG.info("Connected database successfully...");
 
         return DaoServlet.dbConn;
+    }
+
+    /**
+     * @param queryObjName
+     * @param jsonObject
+     */
+    private void saveLastResult(String propPrefix, String queryObjName, JSONObject jsonObject) {
+        String jsoStr = jsonObject.toString();
+        String configKey = propPrefix + queryObjName + LAST_RESULT_PROP;
+        LOG.info("*************** " + configKey);
+
+            /**
+             * For ex : pccc.sql.select.resourceByWorkLocation.last.result = ...
+             */
+            LOG.info("_config.setProperty(" + configKey + ", " + jsoStr + ")");
+            _lastResultConfig.setProperty(configKey, jsoStr);
     }
 }

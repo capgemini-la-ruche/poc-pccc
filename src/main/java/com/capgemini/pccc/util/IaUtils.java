@@ -64,6 +64,7 @@ public class IaUtils {
 
 	// private static TSAUtils _INSTANCE = null;
 	private static Configuration _config = null;
+	private static Configuration _saveableConfig = null;
 
 	private static final String EMPTY = "";
 
@@ -241,13 +242,41 @@ public class IaUtils {
 
 	/**
 	 * public pour acc�s par les tests de regression
-	 * 
+	 *
 	 * @param configFileName
 	 * @return
 	 */
-	public static Configuration loadConfig(String configFileName) {
-
+	public static Configuration loadSaveableConfig(String configFileName, boolean setAutoSave) {
 		Parameters params = new Parameters();
+		FileBasedConfigurationBuilder<FileBasedConfiguration> builder = new FileBasedConfigurationBuilder<FileBasedConfiguration>(
+				PropertiesConfiguration.class)
+				.configure(params.properties().setFileName(configFileName)
+								   .setListDelimiterHandler(new DefaultListDelimiterHandler(';')));
+
+		if (setAutoSave)
+			builder.setAutoSave(true);
+
+		try {
+			_saveableConfig = builder.getConfiguration();
+
+		} catch (ConfigurationException cex) {
+			LOG.error("Erreur de lecture du fichier de properties [" + configFileName + "] -- " + cex.getMessage());
+			LOG.error("==== EXIT");
+			System.exit(0);
+		}
+
+		return _saveableConfig;
+	}
+
+		/**
+		 * public pour acc�s par les tests de regression
+		 *
+		 * @param configFileName
+		 * @return
+		 */
+		public static Configuration loadConfig(String configFileName) {
+
+			Parameters params = new Parameters();
 		FileBasedConfigurationBuilder<FileBasedConfiguration> builder = new FileBasedConfigurationBuilder<FileBasedConfiguration>(
 				PropertiesConfiguration.class)
 						.configure(params.properties().setFileName(configFileName)

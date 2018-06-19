@@ -22,6 +22,7 @@ public class PCCCManagerTest extends TestCase {
     // ------------------------------------- static variables
     private final static Logger LOG = LoggerFactory.getLogger(PCCCManagerTest.class);
     public static Configuration _config = IaUtils.loadConfig(CFG_FILENAME);
+    public static boolean CALL_DB = false;
 
     // ------------------------------------- instance variables
 
@@ -78,13 +79,14 @@ public class PCCCManagerTest extends TestCase {
         DaoManager daoMgr = DaoManager.getInstance(_config);
 
         try {
-            daoMgr.createDbConnection();
-            String queryName = "resourceByWorkLocation";
-            String sqlQuery = _config.getString("pccc.sql.select." + queryName);
-            int aggColumnId = _config.getInt("pccc.sql.select." + queryName + ".aggColumnId") - 1;
+            if (CALL_DB) {
+                daoMgr.createDbConnection();
+                String queryName = "resourceByWorkLocation";
+                String sqlQuery = _config.getString("pccc.sql.select." + queryName);
+                int aggColumnId = _config.getInt("pccc.sql.select." + queryName + ".aggColumnId") - 1;
 
-            daoMgr.executeSQL(sqlQuery, aggColumnId, queryName);
-
+                daoMgr.executeSQL(sqlQuery, aggColumnId, queryName);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -97,8 +99,9 @@ public class PCCCManagerTest extends TestCase {
         Map<String, String> httpValMap = new HashMap<>();
         httpValMap.put("queryName", "tags");
 
-        daoServlet.doSelect("doSelect/moreURIstuff", null, httpValMap);
-
+        if (CALL_DB) {
+            daoServlet.doSelect("doSelect/moreURIstuff", null, httpValMap);
+        }
     }
     // ------------------------------------- protected methods
 

@@ -3,6 +3,7 @@ package com.capgemini.pccc.manager;
 import com.capgemini.pccc.util.Constants;
 import com.capgemini.pccc.util.Enumeration.IMgr_Action;
 import com.capgemini.pccc.util.IaUtils;
+import org.apache.commons.configuration2.Configuration;
 import org.apache.commons.lang3.EnumUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -35,12 +36,12 @@ public class DaoServlet extends AbstractHttpServlet {
     public static DateFormat yMd_hms_verboseDF = new SimpleDateFormat(VERBOSE_DATE_FORMAT);
     private static String IM_HOST = null;
     private static String IM_PORT = null;
-    private static String LAST_RESULT_FILE = "pccc.sql.queries.last.results.properties";
-    private static String SELECT_PROP = "pccc.sql.select.";
-    private static String INSERT_PROP = "pccc.sql.insert.";
 
-    private static String UPDATE_PROP = "pccc.sql.update.";
-    private static String DELETE_PROP = "pccc.sql.delete.";
+    protected static String SELECT_PROP = "pccc.sql.select.";
+    protected static String INSERT_PROP = "pccc.sql.insert.";
+
+    protected static String UPDATE_PROP = "pccc.sql.update.";
+    protected static String DELETE_PROP = "pccc.sql.delete.";
 
     protected static Connection dbConn = null;
 
@@ -72,6 +73,7 @@ public class DaoServlet extends AbstractHttpServlet {
     public void init() throws ServletException {
         // Do required initialization
         LOG.info("init() called");
+
     }
 
     /*
@@ -133,11 +135,11 @@ public class DaoServlet extends AbstractHttpServlet {
         /*
          * Checking other parameters -- isParamMissing() includes htmlResponse()
          */
-//		if (isParamMissing(response, "pk_id", httpValMap))
-//			return;
-//
-//		String pk_idStr = httpValMap.get("pk_id");
-//		Long pk_id = Long.parseLong(pk_idStr);
+        //		if (isParamMissing(response, "pk_id", httpValMap))
+        //			return;
+        //
+        //		String pk_idStr = httpValMap.get("pk_id");
+        //		Long pk_id = Long.parseLong(pk_idStr);
 
         String reqURI = req.getRequestURI();
 
@@ -174,8 +176,8 @@ public class DaoServlet extends AbstractHttpServlet {
                     break;
             }
         } catch (Exception e) {
-            String err = "une " + e.getClass().getSimpleName() + " s'est produite lors de l'appel � "
-                    + action.toString() + "()" + Constants.DASHES + e.getMessage();
+            String err = "une " + e.getClass().getSimpleName() + " s'est produite lors de l'appel � " + action
+                    .toString() + "()" + Constants.DASHES + e.getMessage();
             LOG.error(err, e);
             respondWithHtml(response, err, CALL_ADMIN, true);
         }
@@ -188,7 +190,8 @@ public class DaoServlet extends AbstractHttpServlet {
      * @param httpValMap
      * @return
      */
-    private Boolean isParamMissing(String reqURI, HttpServletResponse response, String paramName, Map<String, String> httpValMap) {
+    private Boolean isParamMissing(
+            String reqURI, HttpServletResponse response, String paramName, Map<String, String> httpValMap) {
         String paramVal = httpValMap.get(paramName);
         if (paramVal == null) {
             JSONObject jso = new JSONObject();
@@ -269,28 +272,28 @@ public class DaoServlet extends AbstractHttpServlet {
     }
 
     /**
-     *
      * @param reqURI
      * @param response
      * @param httpValMap
      */
     protected void doSelect(String reqURI, HttpServletResponse response, Map<String, String> httpValMap) {
-        String queryName = httpValMap.get("queryName");
-        String method = "doSelect(HttpServletResponse, Map<String, String>)(response, " + queryName + ")" + Constants.DASHES;
+        String queryObjName = httpValMap.get("queryName");
+        String method = "doSelect(HttpServletResponse, Map<String, String>)(response, " + queryObjName + ")" +
+                Constants.DASHES;
 
         LOG.info(AbstractHttpServlet.userDir);
+        LOG.info(method + "==== BEGIN");
 
         // pccc.sql.select.generic = SELECT * FROM ${TBL_NAME};
-        //_config.setProperty("QUERY_NAME", queryName);
-        String sql = _config.getString("pccc.sql.select." + queryName);
-        int aggColumnId = _config.getInt("pccc.sql.select." + queryName + ".aggColumnId") - 1;
+        //_config.setProperty("QUERY_NAME", queryObjName);
+        String sql = _config.getString("pccc.sql.select." + queryObjName);
+        int aggColumnId = _config.getInt("pccc.sql.select." + queryObjName + ".aggColumnId") - 1;
         JSONObject jsonObject = null;
 
         try {
-            jsonObject = daoManager.executeSQL(sql, aggColumnId, queryName);
+            jsonObject = daoManager.executeSQL(sql, aggColumnId, queryObjName);
             if (jsonObject != null) {
                 respondWithJson(reqURI, response, jsonObject, false);
-                saveLastResult(queryName, jsonObject);
                 return;
             }
         } catch (SQLException e) {
@@ -300,22 +303,6 @@ public class DaoServlet extends AbstractHttpServlet {
         respondWithHtml(response, "SHOULD NOT COME HERE", method, false);
     }
 
-    /**
-     * @param queryName
-     * @param jsonObject
-     */
-    private void saveLastResult(String queryName, JSONObject jsonObject) {
-        //LOG.info("*************** " + queryName + " = " + jsonObject.toString() + "\\n");
-        FileWriter fw = null;
-        try {
-            fw = new FileWriter(LAST_RESULT_FILE, true);
-            fw.write(SELECT_PROP + queryName + " = " + jsonObject.toString() + "\r\n");
-            fw.close();
-        } catch (IOException e) {
-            IaUtils.logCaughtException(LOG, e, "saveLastResult(" + queryName + ", " + jsonObject.toString() + ")");
-        }
-
-    }
 
     /**
      * @param response
