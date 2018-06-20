@@ -2,3 +2,5 @@
 /.idea
 /*.log
 /*.last.results.properties
+/FILTER_ON_WEEK--04.result.json
+/Output.file.json
